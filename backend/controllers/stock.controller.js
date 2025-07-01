@@ -72,7 +72,7 @@ export const getStock = async (req, res) => {
                 console.log(`[NEWS ARTICLES] Found ${articles.length} articles for ${inputSymbol}`);
 
 
-                sentiment = enhanceSentiment(articles); // ⬅ USE ENHANCEMENT HERE
+                sentiment = enhanceSentiment(articles); 
 
                 console.log(`[ENHANCED SENTIMENT]`, sentiment);
             } catch (err) {
