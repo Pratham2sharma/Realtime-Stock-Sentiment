@@ -2,11 +2,7 @@
 import Sentiment from "sentiment";
 const sentiment = new Sentiment();
 
-/**
- * Enhance sentiment using custom logic (Sentiment.js) over title + description.
- * @param {Array} articles - Array of NewsData articles
- * @returns {Object} sentimentCounts with overall label
- */
+
 export const enhanceSentiment = (articles = []) => {
     let sentimentCounts = { positive: 0, negative: 0, neutral: 0 };
     let overall = "neutral";
