@@ -100,7 +100,7 @@ export const getStock = async (req, res) => {
             }
         }
 
-        // 6. Save to Stock (latest snapshot)
+        // 6. Save to Stock 
         try {
             await Stock.findOneAndUpdate(
                 { symbol: inputSymbol },
