@@ -10,7 +10,7 @@ import yahooFinance from "yahoo-finance2";
 
 dotenv.config();
 
-const ALPHA_SECRET_API_KEY = process.env.ALPHA_API_KEY;
+
 const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY;
 
 export const getStock = async (req, res) => {
