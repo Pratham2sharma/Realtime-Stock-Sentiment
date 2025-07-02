@@ -72,7 +72,10 @@ export const getStock = async (req, res) => {
                 console.log(`[NEWS ARTICLES] Found ${articles.length} articles for ${inputSymbol}`);
 
 
+
                 sentiment = enhanceSentiment(articles); //  USE ENHANCEMENT HERE
+
+
 
                 console.log(`[ENHANCED SENTIMENT]`, sentiment);
             } catch (err) {
@@ -100,7 +103,7 @@ export const getStock = async (req, res) => {
             }
         }
 
-        // 6. Save to Stock (latest snapshot)
+        // 6. Save to Stock 
         try {
             await Stock.findOneAndUpdate(
                 { symbol: inputSymbol },
