@@ -50,7 +50,20 @@ export const getStock = async (req, res) => {
                 const alphaUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_SECRET_API_KEY}`;
                 const priceRes = await axios.get(alphaUrl);
                 const quote = priceRes.data?.["Global Quote"];
-                if (!quote || !quote["05. price"]) throw new Error("Invalid price data");
+                if (!quote || !quote["05. price"]) {
+                    console.error("[ALPHA RAW RESPONSE]", priceRes.data);
+
+                    if (priceRes.data?.Note?.includes("frequency")) {
+                        console.warn(`[ALPHA RATE LIMIT] ${symbol}:`, priceRes.data.Note);
+                    } else if (priceRes.data?.Information) {
+                        console.warn(`[ALPHA INFO] ${symbol}:`, priceRes.data.Information);
+                    } else if (Object.keys(priceRes.data).length === 0) {
+                        console.warn(`[ALPHA EMPTY RESPONSE] Possible IP block or API issue`);
+                    }
+
+                    throw new Error("Invalid price data");
+                }
+
                 lastPrice = parseFloat(quote["05. price"]);
                 console.log(`[ALPHA VANTAGE] ₹${lastPrice}`);
             } catch (err) {
@@ -73,7 +86,7 @@ export const getStock = async (req, res) => {
 
 
 
-                sentiment = enhanceSentiment(articles); 
+                sentiment = enhanceSentiment(articles);
 
 
 
@@ -148,20 +161,20 @@ export const getStockHistory = async (req, res) => {
     }
 
     try {
-        const history = await StockHistory.find({symbol: inputSymbol})
-         .sort({fetchedAt: 1}) //oldest to newest
-         .limit(100); // limit to last 100 entries
+        const history = await StockHistory.find({ symbol: inputSymbol })
+            .sort({ fetchedAt: 1 }) //oldest to newest
+            .limit(100); // limit to last 100 entries
 
-        if(!history || history.length === 0){
+        if (!history || history.length === 0) {
             console.log(`[HISTORY NOT FOUND] No History for ${inputSymbol} currently`);
-            return res.status(404).json({error: "No History found for this Stock Symbol , Please Try Again Later"});
-        }  
+            return res.status(404).json({ error: "No History found for this Stock Symbol , Please Try Again Later" });
+        }
 
-        res.json({history});
-        
+        res.json({ history });
+
     } catch (err) {
-        console.error(`[MONGO HISTORY FETCH ERROR] ${inputSymbol}:` , err.message);
-        return res.status(500).json({error: "Error in getStockHistory Controller"});
+        console.error(`[MONGO HISTORY FETCH ERROR] ${inputSymbol}:`, err.message);
+        return res.status(500).json({ error: "Error in getStockHistory Controller" });
     }
 }
 
