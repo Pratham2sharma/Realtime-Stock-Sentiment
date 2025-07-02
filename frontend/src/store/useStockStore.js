@@ -32,7 +32,7 @@ const useStockStore = create((set, get) => ({
         } catch (error) {
             console.error(error);
             set({
-                error: err.response?.data?.error || "Something went wrong.",
+                error: error.response?.data?.error || "Something went wrong.",
             });
             toast.error(error.response.data.error || "Something Went Wrong");
         } finally {

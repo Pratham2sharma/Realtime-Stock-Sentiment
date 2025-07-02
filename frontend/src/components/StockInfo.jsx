@@ -53,6 +53,7 @@ const StockInfo = () => {
           {loading ? "Loading..." : "Search"}
         </button>
       </div>
+      <p>⚠️ Please request data for only one stock per minute to avoid hitting the API rate limit. Thank you for your patience!</p>
 
       {error && (
         <p className="text-red-600 text-sm mb-3">{error}</p>

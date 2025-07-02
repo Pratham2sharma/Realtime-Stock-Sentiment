@@ -73,7 +73,7 @@ export const getStock = async (req, res) => {
 
 
 
-                sentiment = enhanceSentiment(articles); //  USE ENHANCEMENT HERE
+                sentiment = enhanceSentiment(articles); 
 
 
 
@@ -96,7 +96,7 @@ export const getStock = async (req, res) => {
         // 5. Cache fresh data
         if (isFresh) {
             try {
-                await client.set(cacheKey, JSON.stringify(stockData), "EX", 10);
+                await client.set(cacheKey, JSON.stringify(stockData), "EX", 100);
                 console.log(`[REDIS] Cached ${symbol}`);
             } catch (err) {
                 console.error(`[REDIS SET ERROR] ${symbol}:`, err.message);
