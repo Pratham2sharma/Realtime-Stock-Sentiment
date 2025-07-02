@@ -5,6 +5,7 @@ import validSymbols from "../utils/validSymbols.js";
 import Stock from "../models/stock.model.js";
 import StockHistory from "../models/stockHistory.model.js";
 import { enhanceSentiment } from "../utils/enhanceSentiment.js";
+import yahooFinance from "yahoo-finance2";
 
 
 dotenv.config();
@@ -14,7 +15,7 @@ const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY;
 
 export const getStock = async (req, res) => {
     const inputSymbol = req.params.symbol.toUpperCase();
-    const symbol = `${inputSymbol}.BSE`;
+    const symbol = `${inputSymbol}.BO`;
     const cacheKey = `stock-${symbol}`;
     const forceFresh = req.query.fresh === "true";
 
@@ -47,28 +48,14 @@ export const getStock = async (req, res) => {
         let lastPrice = cachedData?.lastPrice || null;
         if (isFresh) {
             try {
-                const alphaUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_SECRET_API_KEY}`;
-                const priceRes = await axios.get(alphaUrl);
-                const quote = priceRes.data?.["Global Quote"];
-                if (!quote || !quote["05. price"]) {
-                    console.error("[ALPHA RAW RESPONSE]", priceRes.data);
+                const quote = await yahooFinance.quote(`${inputSymbol}.BO`); // ".BO" is BSE
+                if (!quote || !quote.regularMarketPrice) throw new Error("Invalid Yahoo data");
 
-                    if (priceRes.data?.Note?.includes("frequency")) {
-                        console.warn(`[ALPHA RATE LIMIT] ${symbol}:`, priceRes.data.Note);
-                    } else if (priceRes.data?.Information) {
-                        console.warn(`[ALPHA INFO] ${symbol}:`, priceRes.data.Information);
-                    } else if (Object.keys(priceRes.data).length === 0) {
-                        console.warn(`[ALPHA EMPTY RESPONSE] Possible IP block or API issue`);
-                    }
-
-                    throw new Error("Invalid price data");
-                }
-
-                lastPrice = parseFloat(quote["05. price"]);
-                console.log(`[ALPHA VANTAGE] ₹${lastPrice}`);
+                lastPrice = quote.regularMarketPrice;
+                console.log(`[YAHOO FINANCE] ₹${lastPrice}`);
             } catch (err) {
-                console.error(`[ALPHA ERROR] ${symbol}:`, err.message);
-                return res.status(500).json({ error: "Failed to fetch price" });
+                console.error(`[YAHOO ERROR] ${symbol}:`, err.message);
+                return res.status(500).json({ error: "Failed to fetch price from Yahoo Finance" });
             }
         }
 
